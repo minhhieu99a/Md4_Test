@@ -24,37 +24,46 @@ public class CityController {
     private ICityService cityService;
 
     @ModelAttribute("countries")
-    public Iterable<Country>findAllCountry(){
+    public Iterable<Country> findAllCountry() {
         return countryService.findAll();
     }
+
     @GetMapping
     public ResponseEntity<Iterable<City>> listCity() {
         return new ResponseEntity<>(cityService.findAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/country")
+    public ResponseEntity<Iterable <Country>> listCountry() {
+        return new ResponseEntity<>(countryService.findAll(), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<City> cityDetail(@PathVariable Long id) {
-        return new ResponseEntity<>(cityService.findById(id).get(), HttpStatus.OK);
+    Optional<City> city =  cityService.findById(id);
+        return new ResponseEntity<>(city.get(), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<City> createNewCity(@RequestBody City city) {
         return new ResponseEntity<>(cityService.save(city), HttpStatus.CREATED);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<City> deleteCity(@PathVariable Long id){
-       Optional<City> city = cityService.findById(id);
-        if (city.isPresent()){
+    public ResponseEntity<City> deleteCity(@PathVariable Long id) {
+        Optional<City> city = cityService.findById(id);
+        if (city.isPresent()) {
             cityService.remove(id);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<City>editCity(@PathVariable Long id ,@RequestBody City city){
+    public ResponseEntity<City> editCity(@PathVariable Long id, @RequestBody City city) {
         Optional<City> city1 = cityService.findById(id);
         city.setId(city1.get().getId());
-        if (city1.isPresent()){
+        if (city1.isPresent()) {
             cityService.save(city);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
